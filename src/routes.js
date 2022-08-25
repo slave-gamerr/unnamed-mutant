@@ -10,21 +10,21 @@ router.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// Handle a GET request to /github/USERNAME, where
-// USERNAME can be any GitHub username.
+// Handle a GET request to /github/username2, where
+// username2 can be any GitHub username2.
 // Try https://localhost:3000/gh/twilioquest in your browser!
-// `:username` is a route parameter: whatever is entered in the url
-// after github/ will be stored as a variable called `username`.
-router.get("/github/:username", (req, res) => {
+// `:username2` is a route parameter: whatever is entered in the url
+// after github/ will be stored as a variable called `username2`.
+router.get("/github/:username2", (req, res) => {
   // Get the value of the route parameter.
   // It lives in `req` because the URL is part of the request.
   // `params` means parameters, the parameters of the requested URL.
-  // `username` is what we named the route parameter in the route above.
-  let username = req.params.username;
+  // `username2` is what we named the route parameter in the route above.
+  let username2 = req.params.username2;
 
   // Use Axios to make a GET request to the GitHub API
   axios
-    .get(`https://api.github.com/users/${username}`)
+    .get(`https://api.github.com/users/${username2}`)
     // here `response` is the response we get from the GitHub API,
     // Not to be confused with `res`, which is the response for our own app.
     .then((response) => {
@@ -32,7 +32,7 @@ router.get("/github/:username", (req, res) => {
       let public_repos = response.data.public_repos;
       // Now we can use the response from the GitHub API to build our own response.
       res.send(
-        `${username} has ${public_repos} public repositories on GitHub.`
+        `${username2} has ${public_repos} public repositories on GitHub.`
       );
     })
     .catch((error) => {
