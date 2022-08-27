@@ -47,12 +47,26 @@ const options = {
   channels: [channel]
 };
 
+const fs = require('fs');
+var botSets; renew_botSets();
+
 const client = new tmi.Client(options);
 client.connect().catch(console.error);
 
 client.on('connected', () => {
   client.say(channel, "Your friendly neighborhood GALEXY BOT, reporting for duty!")
 });
+
+function renew_botSets(){
+  let data = fs.readFileSync(`botSettings.json`);
+  botSets = JSON.parse(data);
+  console.log(botSets);
+};
+function save_botSets(){
+  console.log(botSets);
+  let data = JSON.stringify(botSets);
+  fs.writeFileSync('botSettings.json', data);
+};
 
 
 var x = false;  //temp setting until i get to use json stuff
@@ -63,26 +77,64 @@ client.on('message', (channel, user, message, self) => {
   if (self) return;
   let cmdArgs = message.split(" ");
   let cmd = cmdArgs[0];
+
+  function replyt(replyt){
+    client.say(channel, replyt)
+  };
+
+  //trying to figure out how to track raids
+  console.log(message);
   
   //first command that wouldn't work at first and shows my frustration (without the usual profanity)
   if (cmd == "!usuck") {
-    client.say(channel, `No, you suck @${user.username}!`);
+    replyt(`No, you suck @${user.username}!`);
   };
+
+  if(cmd == "Now" && cmdArgs[1] == "hosting" && cmdArgs[3] == "for" && cmdArgs[5] == "viewer(s)."){
+    replyt("Woohoo, another great stream in the books!");
+    console.log("raided "+cmdArgs[2])
+  }
   
   //proof of concept on how to manipulate input, WILL BE DELETING, this command structure can get super annoying
-  if(cmd == "!nomo"){x=false;client.say(channel, "That was fun @"+user.username+" let's do it again some time.")};
-  if(user.username==y&&x){client.say(channel, message)};
-  if(cmd == "!mimic"){x=true;y=user.username;client.say(channel, "Now I'mma copy you @"+user.username)};
+  if(cmd == "!nomo"){x=false;replyt("That was fun @"+user.username+" let's do it again some time.")};
+  if(user.username == y && x){replyt(message)};
+  if(cmd == "!mimic"){x=true;y=user.username;replyt("Now I'mma copy you @"+user.username)};
   
   //command without prefix
   if(cmd == "bish"){
-    client.say(channel, "What did you call me?")
+    replyt("What did you call me?")
   };
   
   //banned word reprocussions
   if(message.includes("nigg")){
-    client.say(channel, "/timeout "+user.username+" 666");
-    client.say(channel, "Please watch what you say in this chat "+user.username)
+    replyt("/timeout "+user.username+" 666");
+    replyt("Please watch what you say in this chat "+user.username)
   };
+
+  if(message.includes("uy foll")||message.includes("uy view")){
+    replyt("/ban "+user.username);
+    replyt("Not today... or ever")
+  };
+
+  if(cmd == "!greet"){
+    replyt("Hello Operator Academy, and thank you for helping my creator create me!")
+  };
+
+  if(cmd == "!growing"){
+    replyt("I am currently just a baby bot with limited functionality, but I'm still growing. Maybe one day I'll run Twitch, but I'll settle for fun times with fun people along the way. ;)")
+  };
+  
+  if(cmd == "!galexy"){
+    replyt("My name is GALEXY BOT, and no, that is not a typo, lol. I was designed for a streamer named Alex and my name is her name with g and y on either end. :)")
+  };
+
+  if(cmd == "!flip"){
+    if(botSets.lights == "on"){
+      botSets.lights = "off"
+    } else {
+      botSets.lights = "on"
+    };
+    save_botSets()
+  }
 
 });
