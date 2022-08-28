@@ -77,13 +77,16 @@ client.on('message', (channel, user, message, self) => {
   if (self) return;
   let cmdArgs = message.split(" ");
   let cmd = cmdArgs[0];
+  if(user['user-type'] == "mod"){
+    user.isMod = true;
+  } else {
+    user.isMod = false;
+  }
 
+  //simplify response messages (replyt = reply on twitch)
   function replyt(replyt){
     client.say(channel, replyt)
-  };
-
-  //trying to figure out how to track raids
-  console.log(message);
+  };  
   
   //first command that wouldn't work at first and shows my frustration (without the usual profanity)
   if (cmd == "!usuck") {
@@ -106,10 +109,16 @@ client.on('message', (channel, user, message, self) => {
   };
   
   //banned word reprocussions
-  if(message.includes("nigg")){
+  if(botSets.bWords.some((x) => message.toLowerCase().includes(x))){
     replyt("/timeout "+user.username+" 666");
     replyt("Please watch what you say in this chat "+user.username)
   };
+  //add banned word
+  if(cmd == "!bwords" && cmdArgs[1] == "add" && user.isMod){    
+    botSets.bWords.push(cmdArgs[2]);
+    replyt(cmdArgs[2]+" has been added to the banned words list.");
+    save_botSets()
+  }
 
   if(message.includes("uy foll")||message.includes("uy view")){
     replyt("/ban "+user.username);
@@ -135,6 +144,14 @@ client.on('message', (channel, user, message, self) => {
       botSets.lights = "on"
     };
     save_botSets()
-  }
+  };
+
+  if(cmd == "boop"){
+    if(user.isMod){
+      replyt("OW, you mods boop too hard!")
+    } else {
+      replyt("beep!")
+    };
+  };
 
 });
